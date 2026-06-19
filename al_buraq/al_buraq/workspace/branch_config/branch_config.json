@@ -1,0 +1,46 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"bc_hdr1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Branch Configuration</b></span>\",\"col\":12}},{\"id\":\"bc_card1\",\"type\":\"card\",\"data\":{\"card_name\":\"Setup\",\"col\":12}}]",
+ "doctype": "Workspace",
+ "hide_custom": 0,
+ "is_hidden": 0,
+ "label": "Branch Configuration",
+ "module": "Al Buraq",
+ "name": "Branch Config",
+ "public": 1,
+ "roles": [
+  {"role": "System Manager"},
+  {"role": "Stock Manager"}
+ ],
+ "shortcuts": [],
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Setup",
+   "link_count": 0,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Branch Configuration",
+   "link_to": "Branch Configuration",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Branch Naming Series",
+   "link_to": "Branch Naming Series",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ]
+}

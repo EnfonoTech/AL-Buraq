@@ -1,0 +1,14 @@
+{
+ "doctype": "Page",
+ "module": "Al Buraq",
+ "name": "al-buraq-dashboard",
+ "page_name": "al-buraq-dashboard",
+ "roles": [
+  {"role": "System Manager"},
+  {"role": "Stock Manager"},
+  {"role": "Accounts Manager"},
+  {"role": "Branch User"},
+  {"role": "Stock User"}
+ ],
+ "title": "Dashboard"
+}
