@@ -1,9 +1,16 @@
 app_name = "al_buraq"
-app_title = "al_buraq"
+app_title = "Al Buraq"
 app_publisher = "Enfono Technologies"
 app_description = "custom app"
 app_email = "contact@enfono.com"
 app_license = "mit"
+
+fixtures = [
+	{"doctype": "Workspace", "filters": [["module", "=", "Al Buraq"]]},
+]
+
+after_install = "al_buraq.setup.after_install"
+after_migrate = "al_buraq.setup.after_migrate"
 
 # Apps
 # ------------------
@@ -43,7 +50,10 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {
+	"Sales Invoice": "public/js/sales_invoice.js",
+	"Purchase Invoice": "public/js/purchase_invoice.js",
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
