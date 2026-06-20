@@ -18,12 +18,14 @@ def after_install():
     _clean_stale_module()
     _force_import_doctypes()
     setup_branch_config_permissions()
+    create_custom_fields()
 
 
 def after_migrate():
     _clean_stale_module()
     _force_import_doctypes()
     setup_branch_config_permissions()
+    create_custom_fields()
 
 
 def _clean_stale_module():
@@ -71,4 +73,26 @@ def setup_branch_config_permissions():
                     "delete": delete,
                 }).insert(ignore_permissions=True)
 
+    frappe.db.commit()
+
+
+def create_custom_fields():
+    """Create custom fields on standard doctypes needed by al_buraq features."""
+    fields = [
+        {
+            "dt": "Sales Invoice",
+            "fieldname": "custom_payment_mode",
+            "label": "Payment Mode",
+            "fieldtype": "Select",
+            "options": "\nCash\nCredit",
+            "insert_after": "due_date",
+            "in_list_view": 0,
+            "in_standard_filter": 1,
+        },
+    ]
+    for f in fields:
+        if not frappe.db.exists("Custom Field", {"dt": f["dt"], "fieldname": f["fieldname"]}):
+            doc = frappe.get_doc({"doctype": "Custom Field"})
+            doc.update(f)
+            doc.insert(ignore_permissions=True)
     frappe.db.commit()

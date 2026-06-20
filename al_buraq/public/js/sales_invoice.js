@@ -1,89 +1,202 @@
+console.log("[al_buraq] sales_invoice.js loaded");
+
 frappe.ui.form.on("Sales Invoice", {
 	refresh: function (frm) {
-		if (frm.doc.customer) {
-			frm.add_custom_button(__("Sales History"), function () {
-				_ab_show_sales_history(frm.doc.customer, frm.doc.company);
-			}, __("View"));
-		}
+		console.log("[al_buraq] refresh — payment_mode:", frm.doc.custom_payment_mode, "docstatus:", frm.doc.docstatus, "grand_total:", frm.doc.grand_total, "name:", frm.doc.name);
+	},
+
+	before_submit: function (frm) {
+		console.log("[al_buraq] before_submit fired — payment_mode:", frm.doc.custom_payment_mode, "grand_total:", frm.doc.grand_total, "ab_submitting:", frappe.flags.ab_submitting);
+		if (frappe.flags.ab_submitting) return;
+		if (frm.doc.custom_payment_mode !== "Cash") return;
+		if (flt(frm.doc.grand_total) <= 0) return;
+
+		// Block Frappe's submit flow; our popup will re-trigger it.
+		frappe.validated = false;
+		_ab_open(frm);
 	},
 });
 
-function _ab_show_sales_history(customer, company) {
+// ── Fetch modes then open dialog ──────────────────────────────────────────────
+
+function _ab_open(frm) {
+	if (frappe.flags.ab_popup_open) return;
+	frappe.flags.ab_popup_open = true;
+
 	frappe.call({
-		method: "al_buraq.api.history.get_sales_history",
-		args: { customer: customer, limit: 20 },
+		method: "al_buraq.api.payment.get_payment_modes",
+		args: { company: frm.doc.company },
 		callback: function (r) {
-			const invoices = r.message || [];
-			if (!invoices.length) {
-				frappe.msgprint(__("No sales history found for {0}", [customer]));
+			var modes = r.message || [];
+			if (!modes.length) {
+				frappe.flags.ab_popup_open = false;
+				frappe.msgprint(__("No payment modes configured for this company."));
 				return;
 			}
-			_ab_render_history_dialog(
-				__("Sales History — {0}", [customer]),
-				invoices,
-				"Sales Invoice"
-			);
+			_ab_dialog(frm, modes);
+		},
+		error: function () {
+			frappe.flags.ab_popup_open = false;
+			frappe.msgprint(__("Could not load payment modes. Please try again."));
 		},
 	});
 }
 
-function _ab_render_history_dialog(title, invoices, doctype) {
-	let html = `
-		<style>
-			.ab-hist-table { width:100%; border-collapse:collapse; font-size:13px; }
-			.ab-hist-table th { background:#f4f6f9; padding:8px 10px; text-align:left;
-				border-bottom:2px solid #e0e6ed; font-weight:600; color:#5a6c7d; }
-			.ab-hist-table td { padding:7px 10px; border-bottom:1px solid #f0f3f7; vertical-align:top; }
-			.ab-hist-link { font-weight:700; color:#2563eb; cursor:pointer; }
-			.ab-hist-link:hover { text-decoration:underline; }
-			.ab-hist-items { font-size:12px; color:#5a6c7d; margin-top:3px; }
-			.ab-hist-item-row { padding:1px 0; }
-			.ab-status-paid { color:#059669; font-weight:600; }
-			.ab-status-unpaid { color:#dc2626; font-weight:600; }
-			.ab-status-partial { color:#d97706; font-weight:600; }
-		</style>
-		<table class="ab-hist-table">
-			<thead>
-				<tr>
-					<th>Invoice</th>
-					<th>Date</th>
-					<th>Items</th>
-					<th style="text-align:right">Total</th>
-					<th style="text-align:right">Outstanding</th>
-					<th>Status</th>
-				</tr>
-			</thead>
-			<tbody>`;
+// ── Payment dialog ────────────────────────────────────────────────────────────
 
-	invoices.forEach(function (inv) {
-		const status_class =
-			inv.status === "Paid" ? "ab-status-paid" :
-			inv.status === "Unpaid" ? "ab-status-unpaid" : "ab-status-partial";
+function _ab_dialog(frm, modes) {
+	var total = flt(frm.doc.rounded_total || frm.doc.grand_total || 0);
+	var cur   = frm.doc.currency || "";
+	var dlg;
 
-		const items_html = (inv.items || []).map(function (it) {
-			return `<div class="ab-hist-item-row">
-				${frappe.utils.escape_html(it.item_code)} — ${frappe.utils.escape_html(it.item_name)}
-				&nbsp;×&nbsp;${frappe.utils.fmt_money(it.qty, 0)} ${frappe.utils.escape_html(it.uom || "")}
-				@ ${frappe.utils.fmt_money(it.rate)}
-			</div>`;
-		}).join("");
+	var fields = [
+		{
+			fieldname: "remaining",
+			fieldtype: "Currency",
+			label: __("Amount to Pay"),
+			default: total,
+			read_only: 1,
+			options: cur,
+		},
+		{ fieldtype: "Section Break" },
+	];
 
-		html += `<tr>
-			<td><span class="ab-hist-link" data-name="${frappe.utils.escape_html(inv.name)}">${frappe.utils.escape_html(inv.name)}</span></td>
-			<td>${frappe.datetime.str_to_user(inv.posting_date)}</td>
-			<td><div class="ab-hist-items">${items_html}</div></td>
-			<td style="text-align:right">${frappe.utils.fmt_money(inv.grand_total)}</td>
-			<td style="text-align:right">${frappe.utils.fmt_money(inv.outstanding_amount)}</td>
-			<td><span class="${status_class}">${frappe.utils.escape_html(inv.status)}</span></td>
-		</tr>`;
+	modes.forEach(function (mode, i) {
+		fields.push(
+			{
+				fieldname: "pay_" + i,
+				fieldtype: "Currency",
+				label: mode,
+				default: 0,
+				options: cur,
+				onchange: function () { _ab_sync(dlg, modes, total); },
+			},
+			{ fieldtype: "Column Break" },
+			{
+				fieldtype: "Button",
+				fieldname: "fill_" + i,
+				label: mode,
+				click: function () {
+					var v = dlg.get_values(true) || {};
+					var others = modes.reduce(function (s, _, j) {
+						return j === i ? s : s + (flt(v["pay_" + j]) || 0);
+					}, 0);
+					dlg.set_value("pay_" + i, flt(Math.max(0, total - others), 2));
+					_ab_sync(dlg, modes, total);
+				},
+			},
+			{ fieldtype: "Section Break" }
+		);
 	});
 
-	html += "</tbody></table>";
-
-	const d = new frappe.ui.Dialog({ title: title, size: "extra-large" });
-	d.$body.html(html);
-	d.$body.on("click", ".ab-hist-link", function () {
-		frappe.set_route("Form", doctype, $(this).data("name"));
+	dlg = new frappe.ui.Dialog({
+		title: __("Enter Payment Amounts"),
+		fields: fields,
+		primary_action_label: __("Submit"),
+		primary_action: function (vals) {
+			_ab_submit(frm, dlg, modes, vals, total, cur);
+		},
+		secondary_action_label: __("Cancel"),
+		secondary_action: function () {
+			dlg.hide();
+		},
+		onhide: function () {
+			frappe.flags.ab_popup_open = false;
+		},
 	});
-	d.show();
+
+	dlg.show();
 }
+
+function _ab_sync(dlg, modes, total) {
+	if (!dlg) return;
+	var v = dlg.get_values(true) || {};
+	var entered = modes.reduce(function (s, _, i) {
+		return s + (flt(v["pay_" + i]) || 0);
+	}, 0);
+	dlg.set_value("remaining", flt(total - entered, 2));
+}
+
+// ── Validate amounts then submit ──────────────────────────────────────────────
+
+function _ab_submit(frm, dlg, modes, vals, total, cur) {
+	var entered = modes.reduce(function (s, _, i) {
+		return s + (flt(vals["pay_" + i]) || 0);
+	}, 0);
+
+	if (entered > 0 && entered < total - 0.01) {
+		frappe.msgprint({
+			title: __("Incomplete"),
+			message: __("{0} still to be allocated.", [format_currency(total - entered, cur)]),
+			indicator: "red",
+		});
+		return;
+	}
+	if (entered - total > 0.5) {
+		frappe.msgprint({
+			title: __("Error"),
+			message: __("Amount {0} exceeds invoice total {1}.", [
+				format_currency(entered, cur), format_currency(total, cur),
+			]),
+			indicator: "red",
+		});
+		return;
+	}
+
+	var payload = [];
+	modes.forEach(function (mode, i) {
+		var amt = flt(vals["pay_" + i]) || 0;
+		if (amt > 0) payload.push({ mode_of_payment: mode, amount: amt });
+	});
+
+	dlg.hide();
+	frappe.flags.ab_popup_open = false;
+	frappe.flags.ab_submitting = true;
+
+	// frm.savesubmit() shows Frappe's confirm dialog then fires before_submit.
+	// Calling frm.save("Submit") skips both — submit directly.
+	frm.save("Submit").then(function () {
+		frappe.flags.ab_submitting = false;
+
+		if (frm.doc.docstatus !== 1) {
+			frm.reload_doc();
+			return;
+		}
+		if (!payload.length) {
+			frm.reload_doc();
+			return;
+		}
+
+		frappe.call({
+			method: "al_buraq.api.payment.create_payment_entries",
+			args: {
+				sales_invoice: frm.doc.name,
+				payments: JSON.stringify(payload),
+			},
+			freeze: true,
+			freeze_message: __("Creating Payment Entries…"),
+			callback: function (res) {
+				var n = ((res && res.message) || []).length;
+				if (n) {
+					frappe.show_alert({
+						message: __("{0} Payment {1} created", [n, n === 1 ? "Entry" : "Entries"]),
+						indicator: "green",
+					}, 5);
+				}
+				frm.reload_doc();
+			},
+			error: function () {
+				frappe.msgprint({
+					title: __("Note"),
+					message: __("Invoice submitted. Please create payment entries manually."),
+					indicator: "orange",
+				});
+				frm.reload_doc();
+			},
+		});
+	}).catch(function () {
+		frappe.flags.ab_submitting = false;
+		frm.reload_doc();
+	});
+}
+
