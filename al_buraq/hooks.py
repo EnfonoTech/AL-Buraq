@@ -33,7 +33,10 @@ after_migrate = "al_buraq.setup.after_migrate"
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/al_buraq/css/al_buraq.css"
-# app_include_js = "/assets/al_buraq/js/al_buraq.js"
+app_include_js = [
+	"/assets/al_buraq/js/stock_availability.js",
+	"/assets/al_buraq/js/last_purchase_rate.js",
+]
 
 # include js, css files in header of web template
 # web_include_css = "/assets/al_buraq/css/al_buraq.css"
