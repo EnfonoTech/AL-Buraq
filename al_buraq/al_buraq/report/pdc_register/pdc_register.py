@@ -29,8 +29,7 @@ def get_columns():
 		{
 			"fieldname": "party_type",
 			"label": _("Party Type"),
-			"fieldtype": "Link",
-			"options": "DocType",
+			"fieldtype": "Data",
 			"width": 100,
 		},
 		{
@@ -105,6 +104,11 @@ def get_data(filters):
 		"company": filters.company,
 		"docstatus": ["!=", 2],
 		"mode_of_payment": ["in", pdc_modes],
+		# A PDC-flagged Mode of Payment is meant for Pay/Receive only - an
+		# Internal Transfer (the clearing voucher itself, moving Cheques in
+		# Hand -> real bank) can end up tagged with the same mode by mistake
+		# and must not appear here as if it were a PDC cheque of its own.
+		"payment_type": ["in", ["Receive", "Pay"]],
 	}
 	if filters.from_date and filters.to_date:
 		conditions["reference_date"] = ["between", [filters.from_date, filters.to_date]]

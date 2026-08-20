@@ -22,8 +22,7 @@ def get_columns():
 		{
 			"fieldname": "party_type",
 			"label": _("Party Type"),
-			"fieldtype": "Link",
-			"options": "DocType",
+			"fieldtype": "Data",
 			"width": 100,
 		},
 		{

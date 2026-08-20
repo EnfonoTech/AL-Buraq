@@ -38,7 +38,7 @@ frappe.query_reports["PDC Register"] = {
 			fieldname: "payment_type",
 			label: __("Payment Type"),
 			fieldtype: "Select",
-			options: "\nReceive\nPay\nInternal Transfer",
+			options: "\nReceive\nPay",
 		},
 		{
 			fieldname: "bank_gl_account",
