@@ -20,6 +20,10 @@ fixtures = [
 			]
 		],
 	},
+	{
+		"doctype": "Print Format",
+		"filters": [["name", "in", ["Accounts Receivable Print"]]],
+	},
 ]
 
 after_install = "al_buraq.setup.after_install"
