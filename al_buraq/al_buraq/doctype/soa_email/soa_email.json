@@ -1,0 +1,120 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2026-08-22 14:36:22.021607",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "party_type",
+  "party",
+  "from_date",
+  "to_date",
+  "email_to",
+  "company",
+  "soa_report",
+  "soa_print_format",
+  "email_template",
+  "transactions"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "SOA-.#####"
+  },
+  {
+   "fieldname": "party_type",
+   "fieldtype": "Select",
+   "label": "Party Type",
+   "options": "\nCustomer\nSupplier"
+  },
+  {
+   "fieldname": "party",
+   "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
+   "label": "Party",
+   "options": "party_type"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date"
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date"
+  },
+  {
+   "fieldname": "transactions",
+   "fieldtype": "Table",
+   "label": "Transactions",
+   "options": "SOA Email Reference"
+  },
+  {
+   "fieldname": "email_to",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Email To",
+   "options": "Email"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "description": "Optional. Leave blank to send only the selected linked documents, without a main statement attachment.",
+   "fieldname": "soa_report",
+   "fieldtype": "Link",
+   "label": "SOA Report",
+   "options": "Report"
+  },
+  {
+   "fieldname": "soa_print_format",
+   "fieldtype": "Link",
+   "label": "SOA Print Format",
+   "options": "Print Format"
+  },
+  {
+   "description": "Optional. Subject/Body used for the email; supports Jinja directly on this doc's fields (e.g. {{ party }}, {{ from_date }}). Falls back to a default subject/body if not set. Company's default Letter Head, if any, is prefixed to the body automatically.",
+   "fieldname": "email_template",
+   "fieldtype": "Link",
+   "label": "Email Template",
+   "options": "Email Template"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-08-22 16:05:22.157371",
+ "modified_by": "Administrator",
+ "module": "Al Buraq",
+ "name": "SOA Email",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
