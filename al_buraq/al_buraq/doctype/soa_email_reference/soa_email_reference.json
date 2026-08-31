@@ -1,0 +1,66 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-08-22 14:27:59.156318",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "reference_type",
+  "reference_name",
+  "parent_invoice",
+  "include_in_email",
+  "print_format"
+ ],
+ "fields": [
+  {
+   "fieldname": "reference_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Reference Type"
+  },
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
+   "label": "Reference Name",
+   "options": "reference_type"
+  },
+  {
+   "default": "0",
+   "fieldname": "include_in_email",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Include in Email"
+  },
+  {
+   "fieldname": "parent_invoice",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Parent Invoice"
+  },
+  {
+   "description": "Print Format to use for this document's attachment. Auto-filled with the DocType's default when fetched; change it to use a different one.",
+   "fieldname": "print_format",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Print Format",
+   "options": "Print Format"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-08-22 14:54:05.347045",
+ "modified_by": "Administrator",
+ "module": "Al Buraq",
+ "name": "SOA Email Reference",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
