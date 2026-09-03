@@ -24,6 +24,34 @@ def _default_print_format(doctype, _cache={}):
 
 
 @frappe.whitelist()
+def get_print_formats_for_doctype(doctype=None, txt=None, searchfield=None, start=0, page_len=20, filters=None):
+	# Print Format's own read permission is restricted to System Manager on
+	# this site, so the row-level "print_format" Link field's default query
+	# returns nothing for any other role even though matching records exist -
+	# this custom query method is used instead (via frm.set_query's "query"
+	# option) to deliberately bypass that and let any user pick a print
+	# format for the document they're already allowed to see/attach.
+	target_doctype = (filters or {}).get("doc_type") if filters else None
+	if not target_doctype:
+		return []
+
+	pf_filters = {"doc_type": target_doctype, "disabled": 0}
+	if txt:
+		pf_filters["name"] = ["like", f"%{txt}%"]
+
+	rows = frappe.get_all(
+		"Print Format",
+		filters=pf_filters,
+		fields=["name"],
+		limit_start=start,
+		limit_page_length=page_len,
+		order_by="name",
+		ignore_permissions=True,
+	)
+	return [(r.name,) for r in rows]
+
+
+@frappe.whitelist()
 def get_transactions(party_type, party, from_date, to_date, company=None):
 	result = []
 
@@ -168,6 +196,11 @@ def get_soa_statement_pdf(doc):
 		"company": doc.company,
 		"from_date": doc.from_date,
 		"to_date": doc.to_date,
+		# "Accounts Receivable"/"Accounts Payable" use a single as-of date
+		# (report_date) instead of from_date/to_date - without this they
+		# default report_date to today and silently show 0 rows whenever
+		# the party's invoices for the requested period are already settled.
+		"report_date": doc.to_date,
 		"party_type": doc.party_type,
 		"party": [doc.party],
 	}
@@ -409,10 +442,11 @@ def _render_generic_statement_pdf(doc, filters, columns, raw_rows):
 
 
 def get_letter_head_html(doc):
-	if not doc.company:
-		return ""
+	letter_head_name = doc.letter_head
 
-	letter_head_name = frappe.db.get_value("Company", doc.company, "default_letter_head")
+	if not letter_head_name and doc.company:
+		letter_head_name = frappe.db.get_value("Company", doc.company, "default_letter_head")
+
 	if not letter_head_name:
 		return ""
 
@@ -433,6 +467,9 @@ def get_email_subject_and_message(doc):
 	else:
 		subject = _("Statement of Account - {0}").format(doc.party)
 		message = _("Please find attached your Statement of Account and related documents.")
+
+	if doc.subject:
+		subject = frappe.render_template(doc.subject, doc.as_dict())
 
 	return subject, get_letter_head_html(doc) + message
 
@@ -491,11 +528,26 @@ def send_soa_email(doc):
 	subject, message = get_email_subject_and_message(doc)
 	message += _get_included_documents_html(doc)
 
-	frappe.sendmail(
+	cc = [addr.strip() for addr in (doc.cc or "").split(",") if addr.strip()]
+
+	if doc.sender:
+		sender_email = frappe.db.get_value("Email Account", doc.sender, "email_id")
+	else:
+		sender_email = frappe.session.user
+
+	frappe.enqueue(
+		queue="short",
+		method=frappe.sendmail,
 		recipients=[doc.email_to],
+		sender=sender_email,
+		cc=cc,
 		subject=subject,
 		message=message,
+		now=True,
+		reference_doctype="SOA Email",
+		reference_name=doc.name,
 		attachments=attachments,
+		expose_recipients="header",
 	)
 
 	return len(attachments)

@@ -23,7 +23,13 @@ frappe.ui.form.on("SOA Email", {
 	refresh: function (frm) {
 		frm.set_query("print_format", "transactions", function (doc, cdt, cdn) {
 			const row = locals[cdt][cdn];
+			// Print Format's own read permission is restricted to System
+			// Manager on this site, so the default Link-field search returns
+			// nothing for any other role even though matching records exist.
+			// Route through a whitelisted server method that deliberately
+			// bypasses that restriction instead.
 			return {
+				query: "al_buraq.al_buraq.doctype.soa_email.soa_email.get_print_formats_for_doctype",
 				filters: {
 					doc_type: row.reference_type,
 				},

@@ -11,11 +11,17 @@
   "party",
   "from_date",
   "to_date",
-  "email_to",
+  "column_break_layout",
   "company",
   "soa_report",
   "soa_print_format",
+  "email_to",
+  "cc",
+  "subject",
   "email_template",
+  "letter_head",
+  "sender",
+  "section_break_transactions",
   "transactions"
  ],
  "fields": [
@@ -49,6 +55,21 @@
    "label": "To Date"
   },
   {
+   "fieldname": "column_break_layout",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Optional. Email Account to send from. Defaults to the current user if not set.",
+   "fieldname": "sender",
+   "fieldtype": "Link",
+   "label": "Sender",
+   "options": "Email Account"
+  },
+  {
+   "fieldname": "section_break_transactions",
+   "fieldtype": "Section Break"
+  },
+  {
    "fieldname": "transactions",
    "fieldtype": "Table",
    "label": "Transactions",
@@ -60,6 +81,25 @@
    "in_list_view": 1,
    "label": "Email To",
    "options": "Email"
+  },
+  {
+   "description": "Comma-separated list of CC email addresses (optional).",
+   "fieldname": "cc",
+   "fieldtype": "Small Text",
+   "label": "CC"
+  },
+  {
+   "description": "Optional. Overrides the subject coming from the Email Template. Supports Jinja on this doc's fields (e.g. {{ party }}).",
+   "fieldname": "subject",
+   "fieldtype": "Data",
+   "label": "Subject"
+  },
+  {
+   "fieldname": "letter_head",
+   "fieldtype": "Link",
+   "label": "Letter Head",
+   "options": "Letter Head",
+   "description": "Optional. Overrides the Company's default Letter Head for this email's body."
   },
   {
    "fieldname": "company",
