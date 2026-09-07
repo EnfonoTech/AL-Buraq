@@ -1,0 +1,174 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2026-09-07 00:00:00.000000",
+ "description": "A frozen prediction from one Cash Forecast run, for one period bucket — created by the 'Take Snapshot' button on the Cash Forecast report. Read by the Forecast vs Actual Cash Reconciliation report once the period has closed. Never recalculated after creation, and never written to by anything else in this suite.",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "company", "snapshot_date",
+  "column_break_period", "period_label", "period_start", "period_end",
+  "section_break_predicted",
+  "predicted_opening_position", "predicted_inflow",
+  "column_break_predicted", "predicted_outflow", "predicted_net_movement", "predicted_closing_position",
+  "section_break_remarks",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "snapshot_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Snapshot Date",
+   "reqd": 1,
+   "description": "The date this prediction was taken — not the period being predicted."
+  },
+  {
+   "fieldname": "column_break_period",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "period_label",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Period",
+   "read_only": 1
+  },
+  {
+   "fieldname": "period_start",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Period Start",
+   "reqd": 1
+  },
+  {
+   "fieldname": "period_end",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Period End",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_predicted",
+   "fieldtype": "Section Break",
+   "label": "Predicted (Frozen at Snapshot Date)"
+  },
+  {
+   "fieldname": "predicted_opening_position",
+   "fieldtype": "Currency",
+   "label": "Predicted Opening Position",
+   "options": "Company:company:default_currency"
+  },
+  {
+   "fieldname": "predicted_inflow",
+   "fieldtype": "Currency",
+   "label": "Predicted Inflow",
+   "options": "Company:company:default_currency"
+  },
+  {
+   "fieldname": "column_break_predicted",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "predicted_outflow",
+   "fieldtype": "Currency",
+   "label": "Predicted Outflow",
+   "options": "Company:company:default_currency"
+  },
+  {
+   "fieldname": "predicted_net_movement",
+   "fieldtype": "Currency",
+   "label": "Predicted Net Movement",
+   "options": "Company:company:default_currency"
+  },
+  {
+   "fieldname": "predicted_closing_position",
+   "fieldtype": "Currency",
+   "label": "Predicted Closing Position",
+   "options": "Company:company:default_currency"
+  },
+  {
+   "fieldname": "section_break_remarks",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-09-07 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Al Buraq",
+ "name": "Cash Forecast Snapshot",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 0,
+   "delete": 0,
+   "email": 0,
+   "export": 0,
+   "print": 0,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User",
+   "share": 0,
+   "write": 0
+  },
+  {
+   "create": 0,
+   "delete": 0,
+   "email": 0,
+   "export": 1,
+   "print": 0,
+   "read": 1,
+   "report": 1,
+   "role": "Auditor",
+   "share": 0,
+   "write": 0
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "period_label",
+ "track_changes": 1
+}

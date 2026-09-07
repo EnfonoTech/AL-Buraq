@@ -7,6 +7,102 @@ app_license = "mit"
 
 fixtures = [
 	{"doctype": "Workspace", "filters": [["module", "=", "Al Buraq"]]},
+	{
+		"doctype": "Role",
+		"filters": [
+			[
+				"role_name",
+				"in",
+				["Store Keeper", "Store Manager", "Accounts Staff", "Sales Staff", "Sales Supervisor"],
+			]
+		],
+	},
+	{
+		"doctype": "Workflow",
+		"filters": [
+			[
+				"name",
+				"in",
+				[
+					"Stock Entry Approval",
+					"Item Approval",
+					"Customer Credit Limit Approval",
+					"Shipping Rule Approval",
+					"Selling Price Approval - Quotation",
+					"Selling Price Approval - Sales Order",
+					"Expense Approval",
+					"Budget Scenario Approval",
+					"Forecast Revision Approval",
+				],
+			]
+		],
+	},
+	{
+		"doctype": "Workflow State",
+		"filters": [
+			[
+				"name",
+				"in",
+				[
+					"Draft",
+					"Pending Approval",
+					"Approved",
+					"Pending",
+					"Rejected",
+					"Pending Supervisor Approval",
+					"Pending Manager Approval",
+					"Pending Supervisor",
+					"Pending Manager",
+					"Archived",
+				],
+			]
+		],
+	},
+	{
+		"doctype": "Workflow Action Master",
+		"filters": [
+			["name", "in", ["Submit for Approval", "Approve", "Reject", "Submit", "Escalate", "Resubmit", "Archive", "Reopen"]]
+		],
+	},
+	{
+		"doctype": "Custom Field",
+		"filters": [
+			[
+				"name",
+				"in",
+				[
+					"Stock Entry-workflow_state",
+					"Item-custom_approval_status",
+					"Customer-custom_approval_status",
+					"Shipping Rule-custom_approval_status",
+					"Quotation-workflow_state",
+					"Sales Order-workflow_state",
+					"Customer-custom_has_sales_issue",
+					"Sales Order-custom_manager_override",
+					"Sales Invoice-custom_manager_override",
+				],
+			]
+		],
+	},
+	{
+		"doctype": "Server Script",
+		"filters": [
+			[
+				"name",
+				"in",
+				[
+					"Block Unapproved Item - Sales Invoice Item",
+					"Block Unapproved Item - Stock Entry Detail",
+					"Reset Approval Status - Customer Credit Limit & Payment Terms",
+					"Route Shipping Rule for Approval",
+					"Block Flagged Customer - Sales Order",
+					"Block Flagged Customer - Sales Invoice",
+				],
+			]
+		],
+	},
+	{"doctype": "Number Card", "filters": [["module", "=", "Al Buraq"]]},
+	{"doctype": "Dashboard Chart", "filters": [["module", "=", "Al Buraq"]]},
 ]
 
 after_install = "al_buraq.setup.after_install"
@@ -53,6 +149,7 @@ after_migrate = "al_buraq.setup.after_migrate"
 doctype_js = {
 	"Sales Invoice": "public/js/sales_invoice.js",
 	"Purchase Invoice": "public/js/purchase_invoice.js",
+	"Budget": "public/js/budget.js",
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -147,13 +244,10 @@ doctype_js = {
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Sales Order": {"before_submit": "al_buraq.utils.approval_rules.check_approval_rules"},
+	"Quotation": {"before_submit": "al_buraq.utils.approval_rules.check_approval_rules"},
+}
 
 # Scheduled Tasks
 # ---------------
