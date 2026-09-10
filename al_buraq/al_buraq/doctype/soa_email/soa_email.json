@@ -11,16 +11,20 @@
   "party",
   "from_date",
   "to_date",
-  "column_break_layout",
+  "invoice_reference_doctype",
+  "invoice_reference",
   "company",
   "soa_report",
   "soa_print_format",
+  "column_break_layout",
   "email_to",
   "cc",
   "subject",
   "email_template",
   "letter_head",
   "sender",
+  "section_break_message",
+  "message",
   "section_break_transactions",
   "transactions"
  ],
@@ -53,6 +57,20 @@
    "fieldname": "to_date",
    "fieldtype": "Date",
    "label": "To Date"
+  },
+  {
+   "fieldname": "invoice_reference_doctype",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "options": "\nSales Invoice\nPurchase Invoice",
+   "read_only": 1
+  },
+  {
+   "description": "Optional. Filter Get Transactions down to just this one invoice and its linked Sales Order/Delivery Note/Quotation (or Purchase Order), ignoring From Date/To Date.",
+   "fieldname": "invoice_reference",
+   "fieldtype": "Dynamic Link",
+   "label": "Invoice Reference",
+   "options": "invoice_reference_doctype"
   },
   {
    "fieldname": "column_break_layout",
@@ -89,10 +107,20 @@
    "label": "CC"
   },
   {
-   "description": "Optional. Overrides the subject coming from the Email Template. Supports Jinja on this doc's fields (e.g. {{ party }}).",
+   "description": "This is what actually gets sent. Auto-filled from the Email Template when one is picked (edit freely afterwards) - supports Jinja on this doc's fields (e.g. {{ party }}). Falls back to a default subject if left blank with no template.",
    "fieldname": "subject",
    "fieldtype": "Data",
    "label": "Subject"
+  },
+  {
+   "fieldname": "section_break_message",
+   "fieldtype": "Section Break"
+  },
+  {
+   "description": "This is what actually gets sent. Auto-filled from the Email Template when one is picked (edit freely afterwards) - supports Jinja on this doc's fields (e.g. {{ party }}, {{ from_date }}). Falls back to a default message if left blank with no template.",
+   "fieldname": "message",
+   "fieldtype": "Text Editor",
+   "label": "Message"
   },
   {
    "fieldname": "letter_head",
@@ -123,7 +151,7 @@
    "options": "Print Format"
   },
   {
-   "description": "Optional. Subject/Body used for the email; supports Jinja directly on this doc's fields (e.g. {{ party }}, {{ from_date }}). Falls back to a default subject/body if not set. Company's default Letter Head, if any, is prefixed to the body automatically.",
+   "description": "Optional. Picking a template loads its rendered subject/message into the Subject/Message fields below for you to review or edit - it is not applied silently at send time.",
    "fieldname": "email_template",
    "fieldtype": "Link",
    "label": "Email Template",

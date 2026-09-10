@@ -52,15 +52,21 @@ def get_print_formats_for_doctype(doctype=None, txt=None, searchfield=None, star
 
 
 @frappe.whitelist()
-def get_transactions(party_type, party, from_date, to_date, company=None):
+def get_transactions(party_type, party, from_date, to_date, company=None, invoice_reference=None):
 	result = []
 
 	if party_type == "Customer":
 		si_filters = {
 			"customer": party,
-			"posting_date": ["between", [from_date, to_date]],
 			"docstatus": 1,
 		}
+		if invoice_reference:
+			# A specific invoice was picked to filter down to just its own
+			# linked documents - match it by name regardless of the
+			# From Date/To Date range, instead of the usual period filter.
+			si_filters["name"] = invoice_reference
+		else:
+			si_filters["posting_date"] = ["between", [from_date, to_date]]
 		if company:
 			si_filters["company"] = company
 
@@ -134,9 +140,12 @@ def get_transactions(party_type, party, from_date, to_date, company=None):
 	else:
 		pi_filters = {
 			"supplier": party,
-			"posting_date": ["between", [from_date, to_date]],
 			"docstatus": 1,
 		}
+		if invoice_reference:
+			pi_filters["name"] = invoice_reference
+		else:
+			pi_filters["posting_date"] = ["between", [from_date, to_date]]
 		if company:
 			pi_filters["company"] = company
 
@@ -460,18 +469,34 @@ def get_letter_head_html(doc):
 
 
 def get_email_subject_and_message(doc):
-	if doc.email_template:
-		formatted = frappe.get_doc("Email Template", doc.email_template).get_formatted_email(doc.as_dict())
-		subject = formatted["subject"]
-		message = formatted["message"]
-	else:
-		subject = _("Statement of Account - {0}").format(doc.party)
-		message = _("Please find attached your Statement of Account and related documents.")
-
+	# subject/message are the single source of truth at send time - when an
+	# Email Template is picked, fetch_email_template_content() (called from
+	# the client on the email_template field's change event) loads that
+	# template's rendered content straight into these two fields so the user
+	# can review/edit it before sending, instead of the template being
+	# applied invisibly behind the scenes.
 	if doc.subject:
 		subject = frappe.render_template(doc.subject, doc.as_dict())
+	else:
+		subject = _("Statement of Account - {0}").format(doc.party)
+
+	if doc.message:
+		message = frappe.render_template(doc.message, doc.as_dict())
+	else:
+		message = _("Please find attached your Statement of Account and related documents.")
 
 	return subject, get_letter_head_html(doc) + message
+
+
+@frappe.whitelist()
+def fetch_email_template_content(doc):
+	doc = frappe.parse_json(doc)
+	email_template = doc.get("email_template")
+	if not email_template:
+		return {"subject": "", "message": ""}
+
+	formatted = frappe.get_doc("Email Template", email_template).get_formatted_email(doc)
+	return {"subject": formatted["subject"], "message": formatted["message"]}
 
 
 def build_soa_attachments(doc):
