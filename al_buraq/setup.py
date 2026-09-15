@@ -89,10 +89,130 @@ def create_custom_fields():
             "in_list_view": 0,
             "in_standard_filter": 1,
         },
+        # PDC (Post-Dated Cheque) support
+        {
+            "dt": "Mode of Payment",
+            "fieldname": "custom_is_pdc_payment",
+            "label": "Is PDC Payment",
+            "fieldtype": "Check",
+            "insert_after": "type",
+            "description": (
+                "Enable this to treat this Mode of Payment as a Post-Dated Cheque mode "
+                "(Payment Entry will require a clearing reference)."
+            ),
+        },
+        {
+            "dt": "Mode of Payment Account",
+            "fieldname": "custom_issued_account",
+            "label": "Issued Account (for PDC-style modes)",
+            "fieldtype": "Link",
+            "options": "Account",
+            "insert_after": "default_account",
+            "description": (
+                "Used when a single Mode of Payment (e.g. PDC) needs a different account for "
+                "Pay vs Receive. Default Account above is used for Receive."
+            ),
+        },
+        {
+            "dt": "Payment Entry",
+            "fieldname": "custom_is_pdc_mode",
+            "label": "Is PDC Mode",
+            "fieldtype": "Check",
+            "insert_after": "mode_of_payment",
+            "fetch_from": "mode_of_payment.custom_is_pdc_payment",
+            "hidden": 1,
+            "read_only": 1,
+        },
+        {
+            "dt": "Payment Entry",
+            "fieldname": "custom_clearing_voucher_type",
+            "label": "Clearing Voucher Type",
+            "fieldtype": "Select",
+            "options": "\nPayment Entry\nJournal Entry",
+            "insert_after": "custom_is_pdc_mode",
+            "depends_on": "eval:doc.custom_is_pdc_mode",
+            "allow_on_submit": 1,
+            "description": (
+                "The voucher that moved this cheque's amount from Cheques in Hand to the real "
+                "Bank account. Leave blank while the cheque is still pending."
+            ),
+        },
+        {
+            "dt": "Payment Entry",
+            "fieldname": "custom_clearing_voucher_no",
+            "label": "Clearing Voucher No",
+            "fieldtype": "Dynamic Link",
+            "options": "custom_clearing_voucher_type",
+            "insert_after": "custom_clearing_voucher_type",
+            "depends_on": "eval:doc.custom_is_pdc_mode",
+            "allow_on_submit": 1,
+        },
     ]
     for f in fields:
         if not frappe.db.exists("Custom Field", {"dt": f["dt"], "fieldname": f["fieldname"]}):
             doc = frappe.get_doc({"doctype": "Custom Field"})
             doc.update(f)
             doc.insert(ignore_permissions=True)
+    frappe.db.commit()
+
+
+def setup_pdc_config(company):
+    """One-time PDC config for a company: a single "PDC" Mode of Payment (Received account
+    used for Receive, Issued account used for Pay) + Cheques in Hand accounts.
+
+    Disables the older "PDC Received"/"PDC Issued" modes if present (not deleted, so
+    historical Payment Entries referencing them by name keep working).
+
+    Run manually per company, e.g.:
+        bench --site buraq execute al_buraq.setup.setup_pdc_config --kwargs "{'company': 'HVAC GENERAL TRADING'}"
+    """
+    company_doc = frappe.get_doc("Company", company)
+    abbr = company_doc.abbr
+    bank_group = frappe.db.get_value(
+        "Account", {"company": company, "account_type": "Bank", "is_group": 1}
+    )
+    if not bank_group:
+        frappe.throw(f"No Bank account group found for {company}")
+
+    accounts = {}
+    for label in ("Received", "Issued"):
+        account_name = f"Cheques in Hand - {label} - {abbr}"
+        if not frappe.db.exists("Account", account_name):
+            frappe.get_doc(
+                {
+                    "doctype": "Account",
+                    "account_name": f"Cheques in Hand - {label}",
+                    "parent_account": bank_group,
+                    "company": company,
+                    "account_type": "Bank",
+                    "account_currency": company_doc.default_currency,
+                }
+            ).insert(ignore_permissions=True)
+        accounts[label] = account_name
+
+    if not frappe.db.exists("Mode of Payment", "PDC"):
+        frappe.get_doc(
+            {
+                "doctype": "Mode of Payment",
+                "mode_of_payment": "PDC",
+                "type": "Bank",
+                "custom_is_pdc_payment": 1,
+            }
+        ).insert(ignore_permissions=True)
+    else:
+        frappe.db.set_value("Mode of Payment", "PDC", "custom_is_pdc_payment", 1)
+
+    mop = frappe.get_doc("Mode of Payment", "PDC")
+    row = next((a for a in mop.accounts if a.company == company), None)
+    if not row:
+        mop.append("accounts", {"company": company})
+        row = mop.accounts[-1]
+    row.default_account = accounts["Received"]
+    row.custom_issued_account = accounts["Issued"]
+    mop.save(ignore_permissions=True)
+
+    for old_mode in ("PDC Received", "PDC Issued"):
+        if frappe.db.exists("Mode of Payment", old_mode):
+            frappe.db.set_value("Mode of Payment", old_mode, "enabled", 0)
+
     frappe.db.commit()

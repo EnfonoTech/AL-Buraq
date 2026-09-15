@@ -80,6 +80,8 @@ fixtures = [
 					"Customer-custom_has_sales_issue",
 					"Sales Order-custom_manager_override",
 					"Sales Invoice-custom_manager_override",
+					"Payment Entry-pdc_transfer_entry",
+					"Account-is_petty_cash",
 				],
 			]
 		],
@@ -103,6 +105,10 @@ fixtures = [
 	},
 	{"doctype": "Number Card", "filters": [["module", "=", "Al Buraq"]]},
 	{"doctype": "Dashboard Chart", "filters": [["module", "=", "Al Buraq"]]},
+	{
+		"doctype": "Print Format",
+		"filters": [["name", "in", ["Accounts Receivable Print"]]],
+	},
 ]
 
 after_install = "al_buraq.setup.after_install"
@@ -129,7 +135,10 @@ after_migrate = "al_buraq.setup.after_migrate"
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/al_buraq/css/al_buraq.css"
-# app_include_js = "/assets/al_buraq/js/al_buraq.js"
+app_include_js = [
+	"/assets/al_buraq/js/stock_availability.js",
+	"/assets/al_buraq/js/last_purchase_rate.js",
+]
 
 # include js, css files in header of web template
 # web_include_css = "/assets/al_buraq/css/al_buraq.css"
@@ -150,6 +159,7 @@ doctype_js = {
 	"Sales Invoice": "public/js/sales_invoice.js",
 	"Purchase Invoice": "public/js/purchase_invoice.js",
 	"Budget": "public/js/budget.js",
+	"Payment Entry": "public/js/payment_entry.js",
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
