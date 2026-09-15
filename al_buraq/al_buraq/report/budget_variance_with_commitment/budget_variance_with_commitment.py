@@ -69,6 +69,9 @@ def validate_filters(filters):
 		frappe.throw(_("Company is mandatory"))
 	if not filters.get("from_fiscal_year") or not filters.get("to_fiscal_year"):
 		frappe.throw(_("From Fiscal Year and To Fiscal Year are mandatory"))
+	for fieldname in ("from_fiscal_year", "to_fiscal_year"):
+		if not frappe.db.exists("Fiscal Year", filters.get(fieldname)):
+			frappe.throw(_("{0} is not a valid Fiscal Year").format(filters.get(fieldname)))
 	filters.setdefault("budget_against", "Cost Center")
 	filters.setdefault("period", "Yearly")
 	get_dimension_config(filters.budget_against)

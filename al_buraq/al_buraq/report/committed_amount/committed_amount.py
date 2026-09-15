@@ -30,6 +30,8 @@ def validate_filters(filters):
 		frappe.throw(_("Company is mandatory"))
 	if not filters.get("fiscal_year"):
 		frappe.throw(_("Fiscal Year is mandatory"))
+	if not frappe.db.exists("Fiscal Year", filters.fiscal_year):
+		frappe.throw(_("{0} is not a valid Fiscal Year").format(filters.fiscal_year))
 	filters.setdefault("budget_against", "Cost Center")
 	filters.setdefault("commitment_basis", "Expected Date")
 	filters.setdefault("include_material_requests", 1)

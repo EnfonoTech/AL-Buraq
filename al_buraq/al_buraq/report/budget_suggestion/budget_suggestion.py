@@ -42,6 +42,8 @@ def validate_filters(filters):
 		frappe.throw(_("Company is mandatory"))
 	if not filters.get("target_fiscal_year"):
 		frappe.throw(_("Target Fiscal Year is mandatory"))
+	if not frappe.db.exists("Fiscal Year", filters.target_fiscal_year):
+		frappe.throw(_("{0} is not a valid Fiscal Year").format(filters.target_fiscal_year))
 	filters.setdefault("budget_against", "Cost Center")
 	filters.setdefault("history_months", 12)
 	filters.setdefault("method", "Moving Average")

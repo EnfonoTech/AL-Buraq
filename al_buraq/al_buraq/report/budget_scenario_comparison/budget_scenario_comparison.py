@@ -48,6 +48,8 @@ def validate_filters(filters):
 		frappe.throw(_("Company is mandatory"))
 	if not filters.get("fiscal_year"):
 		frappe.throw(_("Fiscal Year is mandatory"))
+	if not frappe.db.exists("Fiscal Year", filters.fiscal_year):
+		frappe.throw(_("{0} is not a valid Fiscal Year").format(filters.fiscal_year))
 	if not filters.get("scenario"):
 		frappe.throw(_("At least one Scenario is required"))
 	if isinstance(filters.scenario, str):
