@@ -109,6 +109,10 @@ fixtures = [
 		"doctype": "Print Format",
 		"filters": [["name", "in", ["Accounts Receivable Print"]]],
 	},
+	{
+		"doctype": "Web Page",
+		"filters": [["route", "in", ["budget-and-forecast-guide"]]],
+	},
 ]
 
 after_install = "al_buraq.setup.after_install"
