@@ -1,0 +1,177 @@
+{
+ "charts": [],
+ "content": "[{\"id\": \"oi_hdr1\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Open Items</b></span>\", \"col\": 12}}, {\"id\": \"oi_nc1\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Pending Delivery Value\", \"col\": 3}}, {\"id\": \"oi_nc2\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Unbilled Deliveries Value\", \"col\": 3}}, {\"id\": \"oi_nc3\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Unbilled Receipts Value\", \"col\": 3}}, {\"id\": \"oi_nc4\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Pending Receipt Value\", \"col\": 3}}, {\"id\": \"oi_sp1\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"oi_hdr2\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Reports</b></span>\", \"col\": 12}}, {\"id\": \"oi_sc1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Invoiced Items To Be Delivered\", \"col\": 3}}, {\"id\": \"oi_sc2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Delivered Items Pending Billing\", \"col\": 3}}, {\"id\": \"oi_sc3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Received Items Pending Billing\", \"col\": 3}}, {\"id\": \"oi_sc4\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Billed Items Pending Receipt\", \"col\": 3}}, {\"id\": \"oi_sp2\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"oi_card1\", \"type\": \"card\", \"data\": {\"card_name\": \"Sales\", \"col\": 12}}, {\"id\": \"oi_card2\", \"type\": \"card\", \"data\": {\"card_name\": \"Purchase\", \"col\": 12}}]",
+ "doctype": "Workspace",
+ "hide_custom": 0,
+ "icon": "list",
+ "is_hidden": 0,
+ "label": "Open Items",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Sales",
+   "link_count": 0,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Customer Open Items Summary",
+   "link_to": "Customer Open Items Summary",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Invoiced Items To Be Delivered",
+   "link_to": "Invoiced Items To Be Delivered",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Delivered Items Pending Billing",
+   "link_to": "Delivered Items Pending Billing",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Ordered Items Pending Billing",
+   "link_to": "Ordered Items Pending Billing",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Purchase",
+   "link_count": 0,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Supplier Open Items Summary",
+   "link_to": "Supplier Open Items Summary",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Received Items Pending Billing",
+   "link_to": "Received Items Pending Billing",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Billed Items Pending Receipt",
+   "link_to": "Billed Items Pending Receipt",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "module": "Al Buraq",
+ "name": "Open Items",
+ "number_cards": [
+  {
+   "label": "Pending Delivery Value",
+   "number_card_name": "Pending Delivery Value"
+  },
+  {
+   "label": "Unbilled Deliveries Value",
+   "number_card_name": "Unbilled Deliveries Value"
+  },
+  {
+   "label": "Unbilled Receipts Value",
+   "number_card_name": "Unbilled Receipts Value"
+  },
+  {
+   "label": "Pending Receipt Value",
+   "number_card_name": "Pending Receipt Value"
+  }
+ ],
+ "public": 1,
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Sales Master Manager"
+  },
+  {
+   "role": "Sales Manager"
+  },
+  {
+   "role": "Sales User"
+  },
+  {
+   "role": "Purchase Master Manager"
+  },
+  {
+   "role": "Purchase Manager"
+  },
+  {
+   "role": "Purchase User"
+  },
+  {
+   "role": "Accounts Manager"
+  },
+  {
+   "role": "Accounts User"
+  },
+  {
+   "role": "Auditor"
+  }
+ ],
+ "title": "Open Items",
+ "shortcuts": [
+  {
+   "label": "Invoiced Items To Be Delivered",
+   "link_to": "Invoiced Items To Be Delivered",
+   "type": "Report",
+   "color": "Blue"
+  },
+  {
+   "label": "Delivered Items Pending Billing",
+   "link_to": "Delivered Items Pending Billing",
+   "type": "Report",
+   "color": "Green"
+  },
+  {
+   "label": "Received Items Pending Billing",
+   "link_to": "Received Items Pending Billing",
+   "type": "Report",
+   "color": "Orange"
+  },
+  {
+   "label": "Billed Items Pending Receipt",
+   "link_to": "Billed Items Pending Receipt",
+   "type": "Report",
+   "color": "Grey"
+  }
+ ]
+}
