@@ -574,7 +574,7 @@
     "parenttype": "Workspace",
     "report_ref_doctype": null,
     "type": "Card Break",
-    "idx": 14
+    "idx": 15
    },
    {
     "dependencies": "",
@@ -593,7 +593,7 @@
     "parenttype": "Workspace",
     "report_ref_doctype": null,
     "type": "Link",
-    "idx": 15
+    "idx": 16
    },
    {
     "dependencies": "",
@@ -612,7 +612,7 @@
     "parenttype": "Workspace",
     "report_ref_doctype": null,
     "type": "Link",
-    "idx": 16
+    "idx": 17
    },
    {
     "dependencies": "",
@@ -631,7 +631,7 @@
     "parenttype": "Workspace",
     "report_ref_doctype": null,
     "type": "Link",
-    "idx": 17
+    "idx": 18
    },
    {
     "name": "nfao1vdvsg",
@@ -640,7 +640,7 @@
     "modified": "2026-09-07 00:00:00.000000",
     "modified_by": "Administrator",
     "docstatus": 0,
-    "idx": 18,
+    "idx": 19,
     "type": "Link",
     "label": "Recurring Cash Commitment",
     "hidden": 0,
@@ -662,7 +662,7 @@
     "modified": "2026-09-07 00:00:00.000000",
     "modified_by": "Administrator",
     "docstatus": 0,
-    "idx": 19,
+    "idx": 20,
     "type": "Link",
     "label": "Cash Forecast Snapshot",
     "hidden": 0,
@@ -694,7 +694,7 @@
     "parenttype": "Workspace",
     "report_ref_doctype": null,
     "type": "Link",
-    "idx": 20
+    "idx": 21
    },
    {
     "dependencies": "",
@@ -713,7 +713,7 @@
     "parenttype": "Workspace",
     "report_ref_doctype": null,
     "type": "Link",
-    "idx": 21
+    "idx": 22
    }
   ],
   "modified": "2026-09-04 15:27:17.536286",
