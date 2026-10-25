@@ -12,3 +12,4 @@ al_buraq.patches.grant_accounts_manager_sales_order_read
 al_buraq.patches.grant_customer_approval_status_permlevel
 al_buraq.patches.grant_quotation_profit_permlevel
 al_buraq.patches.update_print_formats_batch1
+al_buraq.patches.set_up_foreign_currency_rates

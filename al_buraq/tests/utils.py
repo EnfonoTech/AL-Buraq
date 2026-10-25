@@ -30,20 +30,21 @@ def ensure_company():
 
 
 def make_customer(name="AB Test Customer"):
-	if frappe.db.exists("Customer", name):
-		return name
-	frappe.get_doc(
-		{
-			"doctype": "Customer",
-			"customer_name": name,
-			"customer_group": "Individual",
-			"territory": "All Territories",
-		}
-	).insert(ignore_permissions=True)
+	if not frappe.db.exists("Customer", name):
+		frappe.get_doc(
+			{
+				"doctype": "Customer",
+				"customer_name": name,
+				"customer_group": "Individual",
+				"territory": "All Territories",
+			}
+		).insert(ignore_permissions=True)
+	# invoices are refused for a customer still awaiting credit-limit approval
+	frappe.db.set_value("Customer", name, "custom_approval_status", "Approved")
 	return name
 
 
-def make_item(item_code, is_stock_item=1, valuation_rate=0, last_purchase_rate=0, stock_uom="Nos", **kwargs):
+def make_item(item_code, is_stock_item=1, valuation_rate=0, last_purchase_rate=0, stock_uom="Nos", approved=False, **kwargs):
 	if frappe.db.exists("Item", item_code):
 		frappe.delete_doc("Item", item_code, force=True)
 	doc = frappe.get_doc(
@@ -60,6 +61,10 @@ def make_item(item_code, is_stock_item=1, valuation_rate=0, last_purchase_rate=0
 		}
 	)
 	doc.insert(ignore_permissions=True)
+	if approved:
+		# straight to the table: the Item Approval workflow only lets a manager move Pending to Approved
+		frappe.db.set_value("Item", doc.name, "custom_approval_status", "Approved")
+		doc.reload()
 	return doc
 
 
@@ -92,3 +97,75 @@ def make_user(email, roles):
 	user.insert(ignore_permissions=True)
 	user.add_roles(*roles)
 	return user
+
+
+def make_supplier(name="AB Test Supplier"):
+	if frappe.db.exists("Supplier", name):
+		return name
+	frappe.get_doc({"doctype": "Supplier", "supplier_name": name, "supplier_group": "Local"}).insert(
+		ignore_permissions=True
+	)
+	return name
+
+
+def make_purchase_receipt(supplier, item_code, qty, rate):
+	doc = frappe.get_doc(
+		{
+			"doctype": "Purchase Receipt",
+			"company": COMPANY,
+			"supplier": supplier,
+			"posting_date": nowdate(),
+			"items": [{"item_code": item_code, "qty": qty, "rate": rate, "warehouse": WAREHOUSE}],
+		}
+	)
+	doc.insert(ignore_permissions=True)
+	doc.submit()
+	return doc
+
+
+def ensure_sales_person_field():
+	"""The live site has a Sales Person link on Sales Invoice that was added by hand."""
+	if frappe.get_meta("Sales Invoice").has_field("custom_sales_person"):
+		return
+	frappe.get_doc(
+		{
+			"doctype": "Custom Field",
+			"dt": "Sales Invoice",
+			"fieldname": "custom_sales_person",
+			"label": "Sales Person",
+			"fieldtype": "Link",
+			"options": "Sales Person",
+			"insert_after": "customer",
+		}
+	).insert(ignore_permissions=True)
+	frappe.clear_cache(doctype="Sales Invoice")
+
+
+def make_sales_person(name):
+	if frappe.db.exists("Sales Person", name):
+		return name
+	frappe.get_doc({"doctype": "Sales Person", "sales_person_name": name, "parent_sales_person": "Sales Team"}).insert(
+		ignore_permissions=True
+	)
+	return name
+
+
+def make_sales_invoice(item_code, qty, rate, posting_date=None, sales_person=None, team_member=None, customer=None):
+	"""Submitted Sales Invoice for a non-stock item. sales_person fills the Sales Person field,
+	team_member fills the Sales Team table instead."""
+	doc = frappe.new_doc("Sales Invoice")
+	doc.update(
+		{
+			"company": COMPANY,
+			"customer": customer or make_customer(),
+			"posting_date": posting_date or nowdate(),
+			"set_posting_time": 1,
+			"custom_sales_person": sales_person,
+		}
+	)
+	doc.append("items", {"item_code": item_code, "qty": qty, "rate": rate})
+	if team_member:
+		doc.append("sales_team", {"sales_person": team_member, "allocated_percentage": 100})
+	doc.insert(ignore_permissions=True)
+	doc.submit()
+	return doc
