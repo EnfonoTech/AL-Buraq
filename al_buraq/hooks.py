@@ -164,6 +164,8 @@ doctype_js = {
 	"Purchase Invoice": "public/js/purchase_invoice.js",
 	"Budget": "public/js/budget.js",
 	"Payment Entry": "public/js/payment_entry.js",
+	"Quotation": "public/js/quotation.js",
+	"Item": "public/js/item.js",
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -260,7 +262,15 @@ doctype_js = {
 
 doc_events = {
 	"Sales Order": {"before_submit": "al_buraq.utils.approval_rules.check_approval_rules"},
-	"Quotation": {"before_submit": "al_buraq.utils.approval_rules.check_approval_rules"},
+	"Quotation": {
+		"validate": "al_buraq.utils.quotation_profit.set_quotation_profit",
+		"before_submit": "al_buraq.utils.approval_rules.check_approval_rules",
+	},
+	"Item": {"validate": "al_buraq.utils.selling_rate.validate_item_max_selling_rate"},
+	"Item Price": {"validate": "al_buraq.utils.selling_rate.validate_item_price_max_selling_rate"},
+	"Purchase Receipt": {"on_submit": "al_buraq.utils.temporary_item.mark_received_temporary_items"},
+	"Purchase Invoice": {"on_submit": "al_buraq.utils.temporary_item.mark_received_temporary_items"},
+	"Stock Entry": {"on_submit": "al_buraq.utils.temporary_item.mark_received_temporary_items"},
 }
 
 # Scheduled Tasks

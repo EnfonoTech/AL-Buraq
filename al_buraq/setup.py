@@ -14,6 +14,103 @@ ROLE_PERMISSIONS = [
 ]
 
 
+# Permission level that guards the internal profit block on Quotation. Level 1 is already used by
+# ERPNext for Sales User / Maintenance roles, so profit gets its own level; the roles that may read
+# it are granted by patches/grant_quotation_profit_permlevel.py.
+PROFIT_PERMLEVEL = 2
+
+# Requirements 2.1.2 (Quotation profit), 2.1.3 (temporary items), 3.1.3 (maximum selling rate).
+BATCH1_CUSTOM_FIELDS = [
+    {
+        "dt": "Quotation",
+        "fieldname": "custom_profit_section",
+        "label": "Profit (internal)",
+        "fieldtype": "Section Break",
+        "insert_after": "items",
+        "permlevel": PROFIT_PERMLEVEL,
+    },
+    {
+        "dt": "Quotation",
+        "fieldname": "custom_total_profit",
+        "label": "Total Profit",
+        "fieldtype": "Currency",
+        "options": "Company:company:default_currency",
+        "insert_after": "custom_profit_section",
+        "read_only": 1,
+        "permlevel": PROFIT_PERMLEVEL,
+        "description": "Net selling total less item cost, in company currency. Recalculated on save.",
+    },
+    {
+        "dt": "Quotation",
+        "fieldname": "custom_profit_column",
+        "fieldtype": "Column Break",
+        "insert_after": "custom_total_profit",
+        "permlevel": PROFIT_PERMLEVEL,
+    },
+    {
+        "dt": "Quotation",
+        "fieldname": "custom_profit_percent",
+        "label": "Profit %",
+        "fieldtype": "Percent",
+        "insert_after": "custom_profit_column",
+        "read_only": 1,
+        "permlevel": PROFIT_PERMLEVEL,
+        "description": "Total Profit as a percentage of the net selling total.",
+    },
+    {
+        "dt": "Quotation",
+        "fieldname": "custom_profit_note",
+        "label": "Profit Note",
+        "fieldtype": "Small Text",
+        "insert_after": "custom_profit_percent",
+        "read_only": 1,
+        "permlevel": PROFIT_PERMLEVEL,
+    },
+    {
+        "dt": "Item",
+        "fieldname": "custom_is_temporary",
+        "label": "Temporary Item",
+        "fieldtype": "Check",
+        "insert_after": "disabled",
+        "read_only": 1,
+        "in_standard_filter": 1,
+        "description": (
+            "Created from a Quotation for a product that is not in stock yet. Cleared automatically "
+            "when stock is received, or merge it into the real item."
+        ),
+    },
+    {
+        "dt": "Item",
+        "fieldname": "custom_temp_quotation",
+        "label": "Created From Quotation",
+        "fieldtype": "Data",
+        "insert_after": "custom_is_temporary",
+        "read_only": 1,
+        "depends_on": "eval:doc.custom_temp_quotation",
+    },
+    {
+        "dt": "Item",
+        "fieldname": "custom_temp_received_on",
+        "label": "Stock Received On",
+        "fieldtype": "Date",
+        "insert_after": "custom_temp_quotation",
+        "read_only": 1,
+        "depends_on": "eval:doc.custom_temp_received_on",
+    },
+    {
+        "dt": "Item",
+        "fieldname": "custom_max_selling_rate",
+        "label": "Maximum Selling Rate",
+        "fieldtype": "Currency",
+        "insert_after": "max_discount",
+        "description": (
+            "Highest selling rate allowed for this item. Standard Selling Rate and selling Item Prices "
+            "cannot exceed it. Leave 0 for no limit."
+        ),
+    },
+]
+
+
 def after_install():
     _clean_stale_module()
     _force_import_doctypes()
@@ -148,6 +245,7 @@ def create_custom_fields():
             "allow_on_submit": 1,
         },
     ]
+    fields += BATCH1_CUSTOM_FIELDS
     for f in fields:
         if not frappe.db.exists("Custom Field", {"dt": f["dt"], "fieldname": f["fieldname"]}):
             doc = frappe.get_doc({"doctype": "Custom Field"})
