@@ -169,3 +169,53 @@ def make_sales_invoice(item_code, qty, rate, posting_date=None, sales_person=Non
 	doc.insert(ignore_permissions=True)
 	doc.submit()
 	return doc
+
+
+def make_employee(user, reports_to=None, first_name="AB Employee"):
+	"""Active employee tied to a user, optionally reporting to another employee."""
+	existing = frappe.db.get_value("Employee", {"user_id": user}, "name")
+	if existing:
+		return existing
+	doc = frappe.get_doc(
+		{
+			"doctype": "Employee",
+			"first_name": first_name,
+			"gender": "Male",
+			"date_of_birth": "1990-01-01",
+			"date_of_joining": "2020-01-01",
+			"company": COMPANY,
+			"status": "Active",
+			"user_id": user,
+			"reports_to": reports_to,
+		}
+	)
+	doc.insert(ignore_permissions=True)
+	return doc.name
+
+
+def make_opportunity(owner="Administrator", days_old=0, status="Open", customer=None):
+	"""Enquiry for a customer, created `days_old` days ago and owned by `owner`."""
+	doc = frappe.get_doc(
+		{
+			"doctype": "Opportunity",
+			"opportunity_from": "Customer",
+			"party_name": customer or make_customer(),
+			"company": COMPANY,
+			"status": status,
+			"opportunity_type": "Sales",
+		}
+	)
+	doc.insert(ignore_permissions=True)
+	frappe.db.set_value(
+		"Opportunity",
+		doc.name,
+		{"owner": owner, "creation": add_days(nowdate(), -days_old)},
+		update_modified=False,
+	)
+	doc.reload()
+	return doc
+
+
+def bells(user):
+	"""Subjects of the notifications a user has received today."""
+	return frappe.get_all("Notification Log", filters={"for_user": user}, pluck="subject")

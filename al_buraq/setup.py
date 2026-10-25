@@ -111,6 +111,24 @@ BATCH1_CUSTOM_FIELDS = [
 ]
 
 
+# Requirement 2.4.1: a row remembers the Price and Discount Rule that filled its discount, so the
+# rule is applied once and a salesperson who sets the discount back to 0 keeps 0.
+BATCH3_CUSTOM_FIELDS = [
+    {
+        "dt": dt,
+        "fieldname": "custom_rule_applied",
+        "label": "Discount Rule Applied",
+        "fieldtype": "Data",
+        "insert_after": "discount_percentage",
+        "hidden": 1,
+        "read_only": 1,
+        "no_copy": 1,
+        "print_hide": 1,
+    }
+    for dt in ("Quotation Item", "Sales Order Item", "Sales Invoice Item")
+]
+
+
 def after_install():
     _clean_stale_module()
     _force_import_doctypes()
@@ -245,7 +263,7 @@ def create_custom_fields():
             "allow_on_submit": 1,
         },
     ]
-    fields += BATCH1_CUSTOM_FIELDS
+    fields += BATCH1_CUSTOM_FIELDS + BATCH3_CUSTOM_FIELDS
     for f in fields:
         if not frappe.db.exists("Custom Field", {"dt": f["dt"], "fieldname": f["fieldname"]}):
             doc = frappe.get_doc({"doctype": "Custom Field"})

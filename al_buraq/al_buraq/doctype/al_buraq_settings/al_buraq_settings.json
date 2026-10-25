@@ -1,0 +1,117 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-10-26 02:50:55.371034",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "enquiries_section",
+  "enquiry_reminder_days",
+  "enquiry_reminder_role",
+  "default_stages",
+  "reminders_section",
+  "also_email",
+  "expiry_section",
+  "expiry_offer_tiers"
+ ],
+ "fields": [
+  {
+   "fieldname": "enquiries_section",
+   "fieldtype": "Section Break",
+   "label": "Enquiries and Jobs"
+  },
+  {
+   "default": "3",
+   "description": "Enquiries (Opportunities) still open this many days after they were created, with no Job, are reported every day.",
+   "fieldname": "enquiry_reminder_days",
+   "fieldtype": "Int",
+   "label": "Remind When an Enquiry Has No Job After (Days)"
+  },
+  {
+   "default": "Sales Supervisor",
+   "description": "The owner's superior is the Reports To of their Employee record. Without one, everyone with this role is notified.",
+   "fieldname": "enquiry_reminder_role",
+   "fieldtype": "Link",
+   "label": "Notify This Role When the Owner Has No Superior",
+   "options": "Role"
+  },
+  {
+   "description": "Departments added to every new Job created from an Enquiry. Edit freely; stages can also be changed on each Job.",
+   "fieldname": "default_stages",
+   "fieldtype": "Table",
+   "label": "Default Job Stages",
+   "options": "Job Stage Template"
+  },
+  {
+   "fieldname": "reminders_section",
+   "fieldtype": "Section Break",
+   "label": "Reminders"
+  },
+  {
+   "default": "0",
+   "description": "Reminders always appear as notifications in the system. Switch this on only once an outgoing email account is set up.",
+   "fieldname": "also_email",
+   "fieldtype": "Check",
+   "label": "Also Send Reminders by Email"
+  },
+  {
+   "fieldname": "expiry_section",
+   "fieldtype": "Section Break",
+   "label": "Expiry Offers"
+  },
+  {
+   "description": "Stock expiring within the first matching number of days gets that suggested discount.",
+   "fieldname": "expiry_offer_tiers",
+   "fieldtype": "Table",
+   "label": "Offer Discount by Time to Expiry",
+   "options": "Expiry Offer Tier"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-10-26 02:50:55.371034",
+ "modified_by": "Administrator",
+ "module": "Al Buraq",
+ "name": "Al Buraq Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Stock Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

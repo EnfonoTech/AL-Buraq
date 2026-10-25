@@ -1,0 +1,196 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:rule_name",
+ "creation": "2026-10-26 02:50:55.520317",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "rule_name",
+  "enabled",
+  "column_break_1",
+  "document_type",
+  "date_field",
+  "when_section",
+  "when",
+  "days",
+  "column_break_2",
+  "filters",
+  "who_section",
+  "roles",
+  "notify_owner",
+  "subject"
+ ],
+ "fields": [
+  {
+   "fieldname": "rule_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Rule Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "document_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Document Type",
+   "options": "DocType",
+   "reqd": 1
+  },
+  {
+   "description": "Field name of the date to watch, for example due_date or schedule_date.",
+   "fieldname": "date_field",
+   "fieldtype": "Data",
+   "label": "Date Field",
+   "reqd": 1
+  },
+  {
+   "fieldname": "when_section",
+   "fieldtype": "Section Break",
+   "label": "When"
+  },
+  {
+   "default": "Before",
+   "fieldname": "when",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Remind",
+   "options": "Before\nOn\nAfter",
+   "reqd": 1
+  },
+  {
+   "default": "3",
+   "description": "How many days before or after the date. Ignored for On.",
+   "fieldname": "days",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Days"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Filters as a JSON list, for example [[\"docstatus\", \"=\", 1], [\"status\", \"in\", [\"Overdue\", \"Unpaid\"]]].",
+   "fieldname": "filters",
+   "fieldtype": "Code",
+   "label": "Only Documents Matching",
+   "options": "JSON"
+  },
+  {
+   "fieldname": "who_section",
+   "fieldtype": "Section Break",
+   "label": "Who Is Told"
+  },
+  {
+   "fieldname": "roles",
+   "fieldtype": "Table",
+   "label": "Everyone With Role",
+   "options": "Document Reminder Role"
+  },
+  {
+   "default": "0",
+   "fieldname": "notify_owner",
+   "fieldtype": "Check",
+   "label": "Also the Document Owner"
+  },
+  {
+   "default": "{count} {doctype} to follow up",
+   "description": "Use {count}, {doctype} and {days}. One message per person per day, however many documents match.",
+   "fieldname": "subject",
+   "fieldtype": "Data",
+   "label": "Message",
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-26 02:50:55.520317",
+ "modified_by": "Administrator",
+ "module": "Al Buraq",
+ "name": "Document Reminder Rule",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Purchase Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Stock Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "rule_name",
+ "track_changes": 1
+}

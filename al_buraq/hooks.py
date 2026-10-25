@@ -166,6 +166,7 @@ doctype_js = {
 	"Payment Entry": "public/js/payment_entry.js",
 	"Quotation": "public/js/quotation.js",
 	"Item": "public/js/item.js",
+	"Opportunity": "public/js/opportunity.js",
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -261,9 +262,21 @@ doctype_js = {
 # Hook on document methods and events
 
 doc_events = {
-	"Sales Order": {"before_submit": "al_buraq.utils.approval_rules.check_approval_rules"},
+	"Sales Order": {
+		"before_validate": "al_buraq.utils.price_discount.apply_default_discount",
+		"validate": "al_buraq.utils.price_discount.check_max_discount",
+		"before_submit": "al_buraq.utils.approval_rules.check_approval_rules",
+	},
+	"Sales Invoice": {
+		"before_validate": "al_buraq.utils.price_discount.apply_default_discount",
+		"validate": "al_buraq.utils.price_discount.check_max_discount",
+	},
 	"Quotation": {
-		"validate": "al_buraq.utils.quotation_profit.set_quotation_profit",
+		"before_validate": "al_buraq.utils.price_discount.apply_default_discount",
+		"validate": [
+			"al_buraq.utils.quotation_profit.set_quotation_profit",
+			"al_buraq.utils.price_discount.check_max_discount",
+		],
 		"before_submit": "al_buraq.utils.approval_rules.check_approval_rules",
 	},
 	"Item": {"validate": "al_buraq.utils.selling_rate.validate_item_max_selling_rate"},
@@ -293,6 +306,13 @@ doc_events = {
 # 		"al_buraq.tasks.monthly"
 # 	],
 # }
+
+scheduler_events = {
+	"daily": [
+		"al_buraq.tasks.enquiry_reminders.send_unconverted_enquiry_reminders",
+		"al_buraq.tasks.document_reminders.run_document_reminders",
+	],
+}
 
 # Testing
 # -------

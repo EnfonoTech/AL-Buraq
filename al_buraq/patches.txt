@@ -13,3 +13,5 @@ al_buraq.patches.grant_customer_approval_status_permlevel
 al_buraq.patches.grant_quotation_profit_permlevel
 al_buraq.patches.update_print_formats_batch1
 al_buraq.patches.set_up_foreign_currency_rates
+al_buraq.patches.grant_job_record_roles
+al_buraq.patches.seed_batch3_defaults

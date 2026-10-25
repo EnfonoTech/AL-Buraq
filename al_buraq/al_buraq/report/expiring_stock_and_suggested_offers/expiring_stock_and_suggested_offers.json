@@ -1,0 +1,30 @@
+{
+ "add_total_row": 0,
+ "columns": [],
+ "creation": "2026-10-26 12:00:00.000000",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letterhead": null,
+ "modified": "2026-10-26 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Al Buraq",
+ "name": "Expiring Stock and Suggested Offers",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "query": null,
+ "ref_doctype": "Batch",
+ "report_name": "Expiring Stock and Suggested Offers",
+ "report_script": null,
+ "report_type": "Script Report",
+ "roles": [
+  {"role": "System Manager"},
+  {"role": "Stock Manager"},
+  {"role": "Stock User"},
+  {"role": "Sales Manager"},
+  {"role": "Accounts Manager"}
+ ]
+}
